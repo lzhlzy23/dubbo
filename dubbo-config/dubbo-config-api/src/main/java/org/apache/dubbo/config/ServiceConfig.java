@@ -366,6 +366,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
     }
 
     public synchronized void export() {
+        // 配置
         checkAndUpdateSubConfigs();
 
         if (!shouldExport()) {
