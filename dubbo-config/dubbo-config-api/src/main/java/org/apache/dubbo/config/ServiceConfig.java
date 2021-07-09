@@ -294,6 +294,7 @@ public class ServiceConfig<T> extends AbstractServiceConfig {
         completeCompoundConfigs();
         // Config Center should always being started first.
         startConfigCenter();
+        // 检测provider是否配置（即ProviderConfig类对象），如果为空则new一个，并通过父类AbstractConfig的refresh方法通过系统变量初始化
         checkDefault();
         checkProtocol();
         checkApplication();
