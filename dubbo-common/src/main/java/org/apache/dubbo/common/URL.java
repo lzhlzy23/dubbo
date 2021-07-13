@@ -207,6 +207,7 @@ class URL implements Serializable {
         int port = 0;
         String path = null;
         Map<String, String> parameters = null;
+        // 解析路径参数
         int i = url.indexOf("?"); // separator between body and parameters
         if (i >= 0) {
             String[] parts = url.substring(i + 1).split("&");
@@ -224,6 +225,7 @@ class URL implements Serializable {
             }
             url = url.substring(0, i);
         }
+        // 解析协议
         i = url.indexOf("://");
         if (i >= 0) {
             if (i == 0) {
@@ -248,6 +250,7 @@ class URL implements Serializable {
             path = url.substring(i + 1);
             url = url.substring(0, i);
         }
+        // 解析账户密码
         i = url.lastIndexOf("@");
         if (i >= 0) {
             username = url.substring(0, i);
@@ -258,6 +261,7 @@ class URL implements Serializable {
             }
             url = url.substring(i + 1);
         }
+        // 解析port
         i = url.lastIndexOf(":");
         if (i >= 0 && i < url.length() - 1) {
             if (url.lastIndexOf("%") > i) {

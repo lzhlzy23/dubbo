@@ -64,9 +64,11 @@ public class UrlUtils {
             return null;
         }
         String url;
+        // 如果地址包括"://"或者? 则直接赋给url
         if (address.contains("://") || address.contains(URL_PARAM_STARTING_SYMBOL)) {
             url = address;
         } else {
+            // 多个逗号隔开的注册地址，以第一个为主用，其他以路径参数形式作为备用
             String[] addresses = COMMA_SPLIT_PATTERN.split(address);
             url = addresses[0];
             if (addresses.length > 1) {
@@ -80,15 +82,19 @@ public class UrlUtils {
                 url += URL_PARAM_STARTING_SYMBOL + RemotingConstants.BACKUP_KEY + "=" + backup.toString();
             }
         }
+        // 从map中取出protocol的值，空则设为dubbo
         String defaultProtocol = defaults == null ? null : defaults.get(PROTOCOL_KEY);
         if (defaultProtocol == null || defaultProtocol.length() == 0) {
             defaultProtocol = DUBBO_PROTOCOL;
         }
+        // 从map取出注册中心账号和密码
         String defaultUsername = defaults == null ? null : defaults.get(USERNAME_KEY);
         String defaultPassword = defaults == null ? null : defaults.get(PASSWORD_KEY);
+        // 取出端口和path
         int defaultPort = StringUtils.parseInteger(defaults == null ? null : defaults.get(PORT_KEY));
         String defaultPath = defaults == null ? null : defaults.get(PATH_KEY);
         Map<String, String> defaultParameters = defaults == null ? null : new HashMap<String, String>(defaults);
+        // 将map赋值给defaultParameters，并将上面的kv删掉
         if (defaultParameters != null) {
             defaultParameters.remove(PROTOCOL_KEY);
             defaultParameters.remove(USERNAME_KEY);
@@ -97,6 +103,7 @@ public class UrlUtils {
             defaultParameters.remove(PORT_KEY);
             defaultParameters.remove(PATH_KEY);
         }
+        // 将url解析为URL类
         URL u = URL.valueOf(url);
         boolean changed = false;
         String protocol = u.getProtocol();

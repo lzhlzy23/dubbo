@@ -324,30 +324,47 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
      * @return
      */
     protected List<URL> loadRegistries(boolean provider) {
-        // check && override if necessary
+        // loadRegistries 方法主要包含如下的逻辑：
+        //
+        //  1. 构建参数映射集合，也就是 map
+        //  2. 构建注册中心链接列表
+        //  3. 遍历链接列表，并根据条件决定是否将其添加到 registryList 中
         List<URL> registryList = new ArrayList<URL>();
+        // 对于provider来说，已经通过ServiceConfig的completeCompoundConfigs方法，尝试从provider
+        // 获取registries配置
         if (CollectionUtils.isNotEmpty(registries)) {
             for (RegistryConfig config : registries) {
                 String address = config.getAddress();
                 if (StringUtils.isEmpty(address)) {
+                    // 0.0.0.0
                     address = ANYHOST_VALUE;
                 }
                 if (!RegistryConfig.NO_AVAILABLE.equalsIgnoreCase(address)) {
                     Map<String, String> map = new HashMap<String, String>();
+                    // 添加 ApplicationConfig 中的字段信息到 map 中
                     appendParameters(map, application);
+                    // 添加 RegistryConfig 字段信息到 map 中
                     appendParameters(map, config);
+                    // 添加 path 到map
                     map.put(PATH_KEY, RegistryService.class.getName());
+                    // 添加 dubbo版本,时间戳,pid等信息到map
                     appendRuntimeParameters(map);
+                    // 添加 protocol 到map，默认为dubbo
                     if (!map.containsKey(PROTOCOL_KEY)) {
                         map.put(PROTOCOL_KEY, DUBBO_PROTOCOL);
                     }
+
+                    // 解析得到 URL 列表，address 可能包含多个注册中心 ip
                     List<URL> urls = UrlUtils.parseURLs(address, map);
 
                     for (URL url : urls) {
+                        // 将 URL 协议头设置为 registry
                         url = URLBuilder.from(url)
                                 .addParameter(REGISTRY_KEY, url.getProtocol())
                                 .setProtocol(REGISTRY_PROTOCOL)
                                 .build();
+                        // 判断是否添加 url 到 registryList 中，条件如下
+                        // （服务提供者 && register == true或null） || （服务消费者 && subscribe == true或null）
                         if ((provider && url.getParameter(REGISTER_KEY, true))
                                 || (!provider && url.getParameter(SUBSCRIBE_KEY, true))) {
                             registryList.add(url);

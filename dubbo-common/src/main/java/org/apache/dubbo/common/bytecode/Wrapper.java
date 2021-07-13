@@ -104,17 +104,19 @@ public abstract class Wrapper {
      * @return Wrapper instance(not null).
      */
     public static Wrapper getWrapper(Class<?> c) {
+        // 如果是dynamic class(继承自dubbo的ClassGenerator.DC类)，则一直向上寻找父类
         while (ClassGenerator.isDynamicClass(c)) // can not wrapper on dynamic class.
         {
             c = c.getSuperclass();
         }
-
+        // 返回object类的包装类
         if (c == Object.class) {
             return OBJECT_WRAPPER;
         }
-
+        // 查缓存
         Wrapper ret = WRAPPER_MAP.get(c);
         if (ret == null) {
+            // 没有则创建，再存缓存
             ret = makeWrapper(c);
             WRAPPER_MAP.put(c, ret);
         }
