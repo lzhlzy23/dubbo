@@ -329,6 +329,9 @@ public abstract class AbstractInterfaceConfig extends AbstractMethodConfig {
         //  1. 构建参数映射集合，也就是 map
         //  2. 构建注册中心链接列表
         //  3. 遍历链接列表，并根据条件决定是否将其添加到 registryList 中
+        // 在启动vp-account-service的过程中，我们拿到了两个 RegistryConfig
+        // 一个是通过dubbo配置 <dubbo.registry.address> 获取
+        // 另一个是通过 DubboServiceRegistrationAutoConfiguration 的 defaultSpringCloudRegistryConfig 方法创建的bean获取的
         List<URL> registryList = new ArrayList<URL>();
         // 对于provider来说，已经通过ServiceConfig的completeCompoundConfigs方法，尝试从provider
         // 获取registries配置
