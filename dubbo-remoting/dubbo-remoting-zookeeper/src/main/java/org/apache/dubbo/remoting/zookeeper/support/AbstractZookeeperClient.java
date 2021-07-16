@@ -63,8 +63,10 @@ public abstract class AbstractZookeeperClient<TargetDataListener, TargetChildLis
         }
         int i = path.lastIndexOf('/');
         if (i > 0) {
+            // 递归创建上一级路径
             create(path.substring(0, i), false);
         }
+        // 根据 ephemeral 的值创建临时或持久节点
         if (ephemeral) {
             createEphemeral(path);
         } else {
